@@ -1,0 +1,94 @@
+# Default configuration file
+# Any parameters redifined in main.yaml will override these defaults.
+# Parameters left null here are required to be set in main.yaml.
+logging:
+  log_interval: null
+
+experiment:
+  name: default_experiment
+  random_seed: 42
+  plot_examples: true
+  save: true
+
+
+data:
+  window_length: null
+  muap_pkl_path: null
+  num_windows: null
+  min_sources: null
+  max_sources: null
+  num_workers: 4
+  num_channels: null
+  normalise: true
+
+  amplitude:
+    distribution: beta # beta or kostia or none
+    alpha_min: 0.1
+    alpha_max: 2.0
+    beta_min: 10 
+    beta_max: 140
+  
+  noise:
+    add: false
+    min_std: 0.01
+    max_std: 0.1
+
+  curriculum:
+    enabled: false
+    milestones: []
+    parameters: 
+      - {}
+
+  # Single spike data generation parameters
+  min_sources_per_window: null
+  max_sources_per_window: null
+  allow_partial_fit: true
+
+  # Convolved data generation parameters
+  # stride: null
+  # length: ${data.stride} * (${data.num_windows} - 1) + ${data.window_length}  # auto-derived 
+  # sampling_rate: 1000
+  # sampling_period: ${1 / data.sampling_rate}  # auto-derived
+  # duration: ${data.length / data.sampling_rate}  # auto-derived
+  # spikes:
+  #   distribution: gamma
+  #   shape: null
+  #   min_firing_rate: null
+  #   max_firing_rate: null
+
+loss_function: mse
+
+model:
+  name: null
+  checkpoint: experiments/${experiment.name}/train/checkpoints/best_model.pt
+
+
+training:
+  num_samples: null
+  epochs: null
+  batch_size: null
+  val_split: null
+  optimizer: adam
+  learning_rate: null
+  momentum: null
+  weight_decay: 0.0
+  patience: null
+
+validation:
+  batch_size: null
+
+evaluation:
+  muap_pkl_path: null
+  num_sources: null
+  num_samples: null
+  num_plots: null
+  batch_size: null
+
+predict:
+  data_path: data/raw/real/Vertical_D1_Extension.mat
+  stride: 32         # Currently tied up to spike_eval through RealDataGenerator
+  batch_size: 1
+  num_plots: 20
+  num_sources: 5
+  data_dir: null
+  fname_list: null

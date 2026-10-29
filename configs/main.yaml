@@ -1,0 +1,110 @@
+# Default configuration file
+# Any parameters redifined in main.yaml will override these defaults.
+# Parameters left null here are required to be set in main.yaml.
+
+
+experiment:
+  name: TEST
+  random_seed: 42
+
+data:
+  window_length: 64
+  muap_fname: muaps_48ch_subj1.pkl
+  muap_dir: data/simulated/
+  muap_pkl_path: ${data.muap_dir}${data.muap_fname}
+  num_windows: 1
+  min_sources: 100
+  max_sources: 150
+  num_workers: 1
+  num_channels: 12
+  normalise: true
+
+  amplitude:
+    distribution: beta # beta or kostia or none
+    alpha_min: 0.1
+    alpha_max: 2.0
+    beta_min: 10 
+    beta_max: 140
+  
+  noise:
+    add: false
+    min_std: 0.01
+    max_std: 0.1
+
+  curriculum:
+    enabled: false
+    milestones: []
+    parameters: 
+      - {}
+
+  # Single spike data generation parameters
+  min_sources_per_window: 55
+  max_sources_per_window: 70
+  allow_partial_fit: true
+
+
+  # Convolved data generation parameters - Used for spike_eval
+  stride: 64
+  length: 1000  # auto-derived 
+  sampling_rate: 1000
+  sampling_period: 0.001  # auto-derived
+  duration: 1  # auto-derived
+  spikes:
+    distribution: gamma
+    shape: 2.0
+    min_firing_rate: 8
+    max_firing_rate: 25
+
+loss_function: mse
+
+model:
+  name: unet2d
+  checkpoint: experiments/${experiment.name}/train/checkpoints/best_model.pt
+
+training:
+  muap_pkl_path: ${data.muap_dir}train_${data.muap_fname}
+  num_samples: 100000
+  epochs: 2
+  batch_size: 32
+  val_split: 0.1
+  optimizer: adam
+  learning_rate: 0.01
+  momentum: null
+  weight_decay: 0.0
+  patience: 5
+
+validation:
+  batch_size: 32
+
+evaluation:
+  muap_pkl_path: ${data.muap_dir}test_${data.muap_fname}
+  num_sources: 50
+  num_samples: 1000
+  num_plots: 10
+  batch_size: 1
+
+
+predict:
+  data_path: data/raw/real/Vertical_D1_Extension.mat
+  stride: 1         # Currently tied up to spike_eval through RealDataGenerator
+  batch_size: 1
+  num_plots: 20
+  num_sources: 5
+  data_dir: data/real/raw
+  fname_list:
+    - Vertical_Wrist_Extension.mat
+    - Vertical_Wrist_Flexion.mat
+    - Vertical_Wrist_RadialDev.mat
+    - Vertical_Wrist_UlnarDev.mat
+    - Vertical_D2_Extension.mat
+    - Vertical_D3_Extension.mat
+    - Vertical_D4_Extension.mat
+    - Vertical_D5_Extension.mat
+
+
+spike_eval:
+  muap_pkl_path: ${data.muap_dir}test_${data.muap_fname}
+  num_samples: 100
+  batch_size: 8
+  spike_match_tolerance: 2
+  num_sources: 10
